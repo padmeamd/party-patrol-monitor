@@ -2,12 +2,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchRooms, fetchAlerts, acknowledgeAlert } from "@/lib/api";
 import { StatsHeader } from "@/components/StatsHeader";
 import { RoomTable } from "@/components/RoomTable";
-import { AlertTable } from "@/components/AlertTable";
+import { StudentRoomTable } from "@/components/StudentRoomTable";
+import { SecurityAlerts } from "@/components/SecurityAlerts";
+import { QuietHoursBanner } from "@/components/QuietHoursBanner";
+import { ModeSwitcher } from "@/components/ModeSwitcher";
+import { useViewMode, ViewModeProvider } from "@/hooks/use-view-mode";
 import { Shield, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const Index = () => {
+function Dashboard() {
   const queryClient = useQueryClient();
+  const { mode } = useViewMode();
 
   const { data: rooms = [] } = useQuery({
     queryKey: ["rooms"],
@@ -33,11 +38,12 @@ const Index = () => {
     ? Math.round(rooms.reduce((sum, r) => sum + r.currentNoise, 0) / rooms.length)
     : 0;
   const acknowledged = alerts.filter((a) => a.status === "ACKNOWLEDGED").length;
+  const floors = [...new Set(rooms.map((r) => r.floor))].sort();
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b bg-card/80 backdrop-blur-md sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -49,6 +55,7 @@ const Index = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <ModeSwitcher />
             <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
               <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
               Live
@@ -71,17 +78,33 @@ const Index = () => {
 
       {/* Dashboard */}
       <main className="container mx-auto px-4 py-6 space-y-6">
-        <StatsHeader
-          totalRooms={rooms.length}
-          activeAlerts={activeAlerts}
-          avgNoise={avgNoise}
-          acknowledgedToday={acknowledged}
-        />
-
-        <div className="grid lg:grid-cols-2 gap-6">
-          <RoomTable rooms={rooms} />
-          <AlertTable alerts={alerts} onAcknowledge={(id) => ackMutation.mutate(id)} />
-        </div>
+        {mode === "student" ? (
+          <>
+            <QuietHoursBanner />
+            <StudentRoomTable rooms={rooms} />
+          </>
+        ) : (
+          <>
+            <StatsHeader
+              totalRooms={rooms.length}
+              activeAlerts={activeAlerts}
+              avgNoise={avgNoise}
+              acknowledgedToday={acknowledged}
+            />
+            <div className="grid lg:grid-cols-5 gap-6">
+              <div className="lg:col-span-2">
+                <RoomTable rooms={rooms} />
+              </div>
+              <div className="lg:col-span-3">
+                <SecurityAlerts
+                  alerts={alerts}
+                  floors={floors}
+                  onAcknowledge={(id) => ackMutation.mutate(id)}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </main>
 
       {/* Footer */}
@@ -92,6 +115,12 @@ const Index = () => {
       </footer>
     </div>
   );
-};
+}
+
+const Index = () => (
+  <ViewModeProvider>
+    <Dashboard />
+  </ViewModeProvider>
+);
 
 export default Index;
