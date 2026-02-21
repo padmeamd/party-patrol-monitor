@@ -1,22 +1,22 @@
-export type AlertStatus = "NEW" | "ACKNOWLEDGED" | "RESOLVED";
+export type AlertStatus = "NEW" | "ACK";
 
 export interface Alert {
-  id: number;
+  id: string;
   deviceId: string;
   location: string;
   noiseLevel: number;
-  duration: number; // seconds
+  duration?: number | null;
   createdAt: string;
   status: AlertStatus;
 }
 
 export interface Room {
-  id: number;
+  id: string;
   name: string;
-  floor: number;
+  floor?: number | null;
   deviceId: string;
-  currentNoise: number;
-  lastUpdate: string;
+  currentNoise?: number | null;
+  lastUpdate?: string | null;
 }
 
 export function getNoiseCategory(level: number): "low" | "medium" | "high" | "critical" {
