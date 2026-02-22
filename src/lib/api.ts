@@ -1,6 +1,7 @@
 import type { Alert, Room } from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+console.log("API_BASE:", API_BASE, "useMock:", !API_BASE);
 
 // Use mock data when no base URL is provided
 const useMock = !API_BASE;

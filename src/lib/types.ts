@@ -26,15 +26,20 @@ export function getNoiseCategory(level: number): "low" | "medium" | "high" | "cr
   return "critical";
 }
 
-export function formatDuration(seconds: number): string {
-  if (seconds < 60) return `${seconds}s`;
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+export function formatDuration(seconds?: number | null): string {
+  const s = seconds ?? 0;
+  if (s < 60) return `${s}s`;
+  const mins = Math.floor(s / 60);
+  const secs = s % 60;
   return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
 }
 
-export function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
+export function timeAgo(dateStr?: string | null): string {
+  if (!dateStr) return "—";
+  const t = new Date(dateStr).getTime();
+  if (Number.isNaN(t)) return "—";
+
+  const diff = Date.now() - t;
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "just now";
   if (mins < 60) return `${mins}m ago`;

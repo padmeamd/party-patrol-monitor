@@ -4,7 +4,7 @@ import { CheckCircle, AlertTriangle } from "lucide-react";
 
 interface AlertTableProps {
   alerts: Alert[];
-  onAcknowledge: (id: number) => void;
+  onAcknowledge: (id: string) => void;
 }
 
 export function AlertTable({ alerts, onAcknowledge }: AlertTableProps) {

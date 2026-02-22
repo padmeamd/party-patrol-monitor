@@ -6,7 +6,7 @@ import { CheckCircle, AlertTriangle, Filter } from "lucide-react";
 interface SecurityAlertsProps {
   alerts: Alert[];
   floors: number[];
-  onAcknowledge: (id: number) => void;
+  onAcknowledge: (id: string) => void;
 }
 
 export function SecurityAlerts({ alerts, floors, onAcknowledge }: SecurityAlertsProps) {
@@ -41,8 +41,7 @@ export function SecurityAlerts({ alerts, floors, onAcknowledge }: SecurityAlerts
           >
             <option value="ALL">All Status</option>
             <option value="NEW">New</option>
-            <option value="ACKNOWLEDGED">Acknowledged</option>
-            <option value="RESOLVED">Resolved</option>
+            <option value="ACK">Acknowledged</option>
           </select>
           <select
             value={floorFilter}
@@ -129,18 +128,17 @@ function StatusBadge({ status }: { status: string }) {
       </span>
     );
   }
-  if (status === "ACKNOWLEDGED") {
-    return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-warning/15 text-warning">
-        <CheckCircle className="h-3 w-3" />
-        ACK
-      </span>
-    );
-  }
+  if (status === "ACK") {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-success/15 text-success">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-warning/15 text-warning">
       <CheckCircle className="h-3 w-3" />
-      RESOLVED
+      ACK
     </span>
   );
+}
+return (
+  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-muted-foreground">
+    —
+  </span>
+);
 }

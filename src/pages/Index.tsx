@@ -34,11 +34,13 @@ function Dashboard() {
   });
 
   const activeAlerts = alerts.filter((a) => a.status === "NEW").length;
-  const avgNoise = rooms.length
-    ? Math.round(rooms.reduce((sum, r) => sum + r.currentNoise, 0) / rooms.length)
-    : 0;
-  const acknowledged = alerts.filter((a) => a.status === "ACKNOWLEDGED").length;
-  const floors = [...new Set(rooms.map((r) => r.floor))].sort();
+const avgNoise = rooms.length
+  ? Math.round(
+      rooms.reduce((sum, r) => sum + (r.currentNoise ?? 0), 0) / rooms.length
+    )
+  : 0;
+  const acknowledged = alerts.filter((a) => a.status === "ACK").length;
+  const floors = [...new Set(rooms.map((r) => r.floor).filter((f): f is number => typeof f === "number"))].sort((a,b)=>a-b);
 
   return (
     <div className="min-h-screen bg-background">
